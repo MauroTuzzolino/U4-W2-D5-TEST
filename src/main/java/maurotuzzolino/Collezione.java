@@ -1,8 +1,6 @@
 package maurotuzzolino;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Collezione {
@@ -44,5 +42,40 @@ public class Collezione {
     //metodo di rimozione
     public boolean rimuoviGioco(String id) {
         return giochi.remove(id) != null;
+    }
+
+    //metodo di aggiornamento
+    public void aggiornaGioco(String id, Gioco nuovoGioco) {
+        if (!giochi.containsKey(id)) {
+            System.out.println("Errore: nessun gioco con ID " + id + " trovato.");
+            return;
+        }
+        giochi.put(id, nuovoGioco);
+        System.out.println("Gioco con ID " + id + " aggiornato con successo.");
+    }
+
+    //metodo per la stampa delle statistiche
+    public void stampaStatistiche() {
+        long totale = giochi.size();
+        long nVIdeogiochi = giochi.values()
+                .stream()
+                .filter(g -> g instanceof Videogioco)
+                .count();
+        long nTavolo = totale - nVIdeogiochi;
+
+        Optional<Gioco> maxPrezzo = giochi.values()
+                .stream()
+                .max(Comparator.comparingDouble(Gioco::getPrezzo));
+
+        OptionalDouble mediaPrezzi = giochi.values()
+                .stream()
+                .mapToDouble(Gioco::getPrezzo)
+                .average();
+
+        System.out.println("Totale giochi: " + totale);
+        System.out.println("Videogiochi: " + nVIdeogiochi);
+        System.out.println("Giochi da tavolo: " + nTavolo);
+        System.out.println("Gioco più costoso: " + maxPrezzo);
+        System.out.println("Prezzo medio: " + mediaPrezzi);
     }
 }
