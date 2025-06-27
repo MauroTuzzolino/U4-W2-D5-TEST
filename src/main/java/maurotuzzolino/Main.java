@@ -6,6 +6,21 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Collezione collezione = new Collezione();
+
+        try {
+            collezione.aggiungiGioco(new Videogioco("V1", "The Witcher 3", 2015, 19.99, "PC", 70.0, Genere.RPG));
+            collezione.aggiungiGioco(new Videogioco("V2", "FIFA 23", 2022, 49.99, "PS5", 30.0, Genere.SPORT));
+            collezione.aggiungiGioco(new Videogioco("V3", "Resident Evil Village", 2021, 39.99, "Xbox", 15.0, Genere.HORROR));
+
+            collezione.aggiungiGioco(new GiocoDaTavolo("T1", "Catan", 1995, 34.99, 4, 90));
+            collezione.aggiungiGioco(new GiocoDaTavolo("T2", "Ticket to Ride", 2004, 29.99, 5, 60));
+            collezione.aggiungiGioco(new GiocoDaTavolo("T3", "7 Wonders", 2010, 24.99, 7, 40));
+
+            System.out.println("Giochi statici caricati con successo.");
+        } catch (GiocoGiaEsistenteException e) {
+            System.out.println("Errore durante il caricamento iniziale: " + e.getMessage());
+        }
+
         boolean running = true;
 
         while (running) {
@@ -49,7 +64,13 @@ public class Main {
                         System.out.println("Genere (AZIONE, AVVENTURA, STRATEGIA, SPORT, SIMULAZIONE, HORROR, RPG): ");
                         Genere genere = Genere.valueOf(scanner.nextLine().toUpperCase());
 
-                        collezione.aggiungiGioco(new Videogioco(id, titolo, annoPubblicazione, prezzo, piattaforma, durata, genere));
+                        try {
+                            collezione.aggiungiGioco(new Videogioco(id, titolo, annoPubblicazione, prezzo, piattaforma, durata, genere));
+                            System.out.println("Gioco aggiunto con successo");
+                        } catch (GiocoGiaEsistenteException e) {
+                            System.out.println(e.getMessage());
+                        }
+
                     } else if (tipo.equals("T")) {
                         System.out.println("Numero di giocatori (2-10): ");
                         int numeroGiocatori = Integer.parseInt(scanner.nextLine());
@@ -57,7 +78,13 @@ public class Main {
                         System.out.println("Durata media partita (in minuti): ");
                         int durataMedia = Integer.parseInt(scanner.nextLine());
 
-                        collezione.aggiungiGioco(new GiocoDaTavolo(id, titolo, annoPubblicazione, prezzo, numeroGiocatori, durataMedia));
+                        try {
+                            collezione.aggiungiGioco(new GiocoDaTavolo(id, titolo, annoPubblicazione, prezzo, numeroGiocatori, durataMedia));
+                            System.out.println("Gioco aggiunto con successo");
+                        } catch (GiocoGiaEsistenteException e) {
+                            System.out.println(e.getMessage());
+                        }
+
                     } else {
                         System.out.println("Tipo non riconosciuto");
                     }
@@ -66,11 +93,12 @@ public class Main {
                 case 2 -> {
                     System.out.println("Inserisci ID da cercare: ");
                     String id = scanner.nextLine();
-                    Gioco g = collezione.cercaPerId(id);
-                    if (g != null) {
+
+                    try {
+                        Gioco g = collezione.cercaPerId(id);
                         System.out.println(g.getDettagli());
-                    } else {
-                        System.out.println("Nessun gioco trovato con questo ID.");
+                    } catch (GiocoNonTrovatoException e) {
+                        System.out.println(e.getMessage());
                     }
                 }
 
@@ -89,10 +117,11 @@ public class Main {
                 case 5 -> {
                     System.out.println("Inserisci ID da rimuovere: ");
                     String id = scanner.nextLine();
-                    if (collezione.rimuoviGioco(id)) {
-                        System.out.println("Gioco rimosso");
-                    } else {
-                        System.out.println("ID non trovato.");
+                    try {
+                        collezione.rimuoviGioco(id);
+                        System.out.println("Gioco rimosso.");
+                    } catch (GiocoNonTrovatoException e) {
+                        System.out.println(e.getMessage());
                     }
                 }
 
@@ -100,8 +129,11 @@ public class Main {
                     System.out.println("Inserisci ID del gioco da aggiornare: ");
                     String id = scanner.nextLine();
 
-                    if (collezione.cercaPerId(id) == null) {
-                        System.out.println("Gioco non trovato.");
+                    Gioco vecchio;
+                    try {
+                        vecchio = collezione.cercaPerId(id);
+                    } catch (GiocoNonTrovatoException e) {
+                        System.out.println(e.getMessage());
                         break;
                     }
 
@@ -113,7 +145,7 @@ public class Main {
                     System.out.println("Prezzo: ");
                     double prezzo = Double.parseDouble(scanner.nextLine());
 
-                    Gioco vecchio = collezione.cercaPerId(id);
+                    vecchio = collezione.cercaPerId(id);
                     if (vecchio instanceof Videogioco) {
                         System.out.print("Piattaforma: ");
                         String piattaforma = scanner.nextLine();
@@ -122,14 +154,27 @@ public class Main {
                         System.out.print("Genere: ");
                         Genere genere = Genere.valueOf(scanner.nextLine().toUpperCase());
 
-                        collezione.aggiornaGioco(id, new Videogioco(id, titolo, annoPubblicazione, prezzo, piattaforma, durata, genere));
+                        try {
+                            collezione.aggiornaGioco(id, new Videogioco(id, titolo, annoPubblicazione, prezzo, piattaforma, durata, genere));
+                            System.out.println("Gioco aggiornato.");
+                        } catch (GiocoNonTrovatoException e) {
+                            System.out.println(e.getMessage());
+                        }
+
                     } else if (vecchio instanceof GiocoDaTavolo) {
                         System.out.print("Numero giocatori: ");
                         int giocatori = Integer.parseInt(scanner.nextLine());
                         System.out.print("Durata media (minuti): ");
                         int durata = Integer.parseInt(scanner.nextLine());
 
-                        collezione.aggiornaGioco(id, new GiocoDaTavolo(id, titolo, annoPubblicazione, prezzo, giocatori, durata));
+                        try {
+                            collezione.aggiornaGioco(id, new GiocoDaTavolo(id, titolo, annoPubblicazione, prezzo, giocatori, durata));
+                            System.out.println("Gioco aggiornato.");
+                        } catch (GiocoNonTrovatoException e) {
+                            System.out.println(e.getMessage());
+                        }
+
+
                     }
                 }
 

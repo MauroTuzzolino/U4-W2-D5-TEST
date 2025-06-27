@@ -7,18 +7,20 @@ public class Collezione {
     private Map<String, Gioco> giochi = new HashMap<>();
 
     //metodo di aggiunta
-    public void aggiungiGioco(Gioco gioco) {
+    public void aggiungiGioco(Gioco gioco) throws GiocoGiaEsistenteException {
         if (giochi.containsKey(gioco.getId())) {
-            System.out.println("Gioco con ID già esistente");
-            return;
+            throw new GiocoGiaEsistenteException(gioco.getId());
         }
         giochi.put(gioco.getId(), gioco);
-        System.out.println("Gioco aggiunto con successo");
     }
 
     //metodo per la ricerca tramite ID
-    public Gioco cercaPerId(String id) {
-        return giochi.get(id);
+    public Gioco cercaPerId(String id) throws GiocoNonTrovatoException {
+        Gioco g = giochi.get(id);
+        if (g == null) {
+            throw new GiocoNonTrovatoException(id);
+        }
+        return g;
     }
 
     //metodo per la ricerca tramite prezzo
@@ -40,18 +42,19 @@ public class Collezione {
     }
 
     //metodo di rimozione
-    public boolean rimuoviGioco(String id) {
-        return giochi.remove(id) != null;
+    public void rimuoviGioco(String id) throws GiocoNonTrovatoException {
+        if (!giochi.containsKey(id)) {
+            throw new GiocoNonTrovatoException(id);
+        }
+        giochi.remove(id);
     }
 
     //metodo di aggiornamento
-    public void aggiornaGioco(String id, Gioco nuovoGioco) {
+    public void aggiornaGioco(String id, Gioco nuovoGioco) throws GiocoNonTrovatoException {
         if (!giochi.containsKey(id)) {
-            System.out.println("Errore: nessun gioco con ID " + id + " trovato.");
-            return;
+            throw new GiocoNonTrovatoException(id);
         }
         giochi.put(id, nuovoGioco);
-        System.out.println("Gioco con ID " + id + " aggiornato con successo.");
     }
 
     //metodo per la stampa delle statistiche
