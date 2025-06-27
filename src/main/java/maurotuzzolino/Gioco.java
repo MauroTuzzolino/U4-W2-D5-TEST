@@ -46,4 +46,5 @@ public abstract class Gioco {
         this.prezzo = prezzo;
     }
 
+    public abstract String getDettagli();
 }

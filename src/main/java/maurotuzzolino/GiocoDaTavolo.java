@@ -25,4 +25,9 @@ public class GiocoDaTavolo extends Gioco {
     public void setDurataMedia(int durataMedia) {
         this.durataMedia = durataMedia;
     }
+
+    @Override
+    public String getDettagli() {
+        return "Gioco da Tavolo: " + titolo + ", Giocatori: " + numeroGiocatori + ", Durata media: " + durataMedia + " min";
+    }
 }

@@ -35,4 +35,9 @@ public class Videogioco extends Gioco {
     public void setGenere(Genere genere) {
         this.genere = genere;
     }
+
+    @Override
+    public String getDettagli() {
+        return "Videogioco: " + titolo + " (" + piattaforma + "), Genere: " + genere + ", Durata: " + durataGioco + "h";
+    }
 }
